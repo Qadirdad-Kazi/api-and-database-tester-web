@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Testing Suite - API & MongoDB Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .main-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 3px solid #e0e0e0;
+        }
+
+        .main-tab {
+            flex: 1;
+            padding: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 4px solid transparent;
+        }
+
+        .main-tab:hover {
+            background: #e9ecef;
+        }
+
+        .main-tab.active {
+            color: #667eea;
+            background: white;
+            border-bottom-color: #667eea;
+        }
+
+        .main-tab-content {
+            display: none;
+        }
+
+        .main-tab-content.active {
+            display: block;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="url"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+
+        .url-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .url-bar select {
+            width: 140px;
+            font-weight: 600;
+        }
+
+        .url-bar input {
+            flex: 1;
+        }
+
+        .method-select {
+            padding: 12px 15px;
+            font-weight: 600;
+        }
+
+        .method-GET { background: #4caf50; color: white; }
+        .method-POST { background: #2196f3; color: white; }
+        .method-PUT { background: #ff9800; color: white; }
+        .method-PATCH { background: #9c27b0; color: white; }
+        .method-DELETE { background: #f44336; color: white; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkbox-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-save {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #218838;
+        }
+
+        .output-section {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            color: #d4d4d4;
+        }
+
+        .output-line {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-left: 3px solid transparent;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .output-line.success {
+            border-left-color: #4caf50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .output-line.error {
+            border-left-color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+
+        .output-line.info {
+            border-left-color: #2196f3;
+            background: rgba(33, 150, 243, 0.1);
+        }
+
+        .output-line.warning {
+            border-left-color: #ff9800;
+            background: rgba(255, 152, 0, 0.1);
+        }
+
+        .timestamp {
+            color: #888;
+            font-size: 0.85rem;
+            margin-right: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-badge.success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-badge.error {
+            background: #f44336;
+            color: white;
+        }
+
+        .status-badge.testing {
+            background: #ff9800;
+            color: white;
+        }
+
+        .status-badge.idle {
+            background: #6c757d;
+            color: white;
+        }
+
+        .status-badge.connected {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-badge.disconnected {
+            background: #f44336;
+            color: white;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .header-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .header-row input {
+            flex: 1;
+        }
+
+        .btn-add-header {
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-remove-header {
+            background: #dc3545;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .saved-apis {
+            margin-top: 20px;
+        }
+
+        .api-item {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .api-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .api-item-info {
+            flex: 1;
+        }
+
+        .api-item-method {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-right: 10px;
+        }
+
+        .api-item-url {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .api-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 15px;
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Unified Testing Suite</h1>
+            <p>Comprehensive API & MongoDB Testing Platform</p>
+        </div>
+
+        <div class="main-tabs">
+            <button class="main-tab active" onclick="switchMainTab('api')">🔌 API Tester</button>
+            <button class="main-tab" onclick="switchMainTab('mongodb')">🍃 MongoDB Tester</button>
+        </div>
+
+        <!-- API TESTER SECTION -->
+        <div id="main-tab-api" class="main-tab-content active">
+            <div class="content">
+                <div class="section">
+                    <div class="section-title">Request Configuration</div>
+                    
+                    <div class="url-bar">
+                        <select id="method" class="method-select">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="PATCH">PATCH</option>
+                            <option value="DELETE">DELETE</option>
+                        </select>
+                        <input 
+                            type="url" 
+                            id="apiUrl" 
+                            placeholder="https://api.example.com/endpoint"
+                            value="https://jsonplaceholder.typicode.com/posts/1"
+                        >
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab('headers')">Headers</button>
+                        <button class="tab" onclick="switchTab('body')">Body</button>
+                        <button class="tab" onclick="switchTab('auth')">Authorization</button>
+                    </div>
+
+                    <div id="tab-headers" class="tab-content active">
+                        <div id="headersList">
+                            <div class="header-row">
+                                <input type="text" placeholder="Header Key" class="header-key">
+                                <input type="text" placeholder="Header Value" class="header-value">
+                            </div>
+                        </div>
+                        <button class="btn-add-header" onclick="addHeaderRow()">+ Add Header</button>
+                    </div>
+
+                    <div id="tab-body" class="tab-content">
+                        <div class="input-group">
+                            <label for="requestBody">Request Body (JSON):</label>
+                            <textarea id="requestBody" rows="8" placeholder='{\n  "key": "value"\n}'></textarea>
+                        </div>
+                    </div>
+
+                    <div id="tab-auth" class="tab-content">
+                        <div class="input-group">
+                            <label for="authType">Authorization Type:</label>
+                            <select id="authType" onchange="toggleAuthFields()">
+                                <option value="none">None</option>
+                                <option value="bearer">Bearer Token</option>
+                                <option value="basic">Basic Auth</option>
+                                <option value="apikey">API Key</option>
+                            </select>
+                        </div>
+                        <div id="authFields"></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Test Options</div>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="test-status-code" checked>
+                            <label for="test-status-code">Validate Status Code</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="test-response-time" checked>
+                            <label for="test-response-time">Measure Response Time</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="test-headers" checked>
+                            <label for="test-headers">Check Response Headers</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="test-body" checked>
+                            <label for="test-body">Parse Response Body</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="test-content-type">
+                            <label for="test-content-type">Validate Content-Type</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="test-json-schema">
+                            <label for="test-json-schema">Check JSON Structure</label>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label for="expectedStatus">Expected Status Code:</label>
+                            <input type="text" id="expectedStatus" placeholder="200" value="200">
+                        </div>
+                        <div class="input-group">
+                            <label for="apiName">API Name (for saving):</label>
+                            <input type="text" id="apiName" placeholder="My API Test">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="runApiTest()">Send Request</button>
+                    <button class="btn-save" onclick="saveApi()">Save API</button>
+                    <button class="btn-secondary" onclick="clearApiOutput()">Clear Output</button>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">
+                        Output
+                        <span id="apiStatusBadge" class="status-badge idle">Idle</span>
+                    </div>
+                    <div class="output-section" id="apiOutput">
+                        <div class="output-line info">
+                            <span class="timestamp">[Ready]</span>
+                            <span>Ready to test APIs. Enter your endpoint URL and click "Send Request".</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section saved-apis">
+                    <div class="section-title">Saved APIs</div>
+                    <div id="savedApisList">
+                        <div class="output-line info">
+                            <span>No saved APIs yet. Click "Save API" to save your current configuration.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MONGODB TESTER SECTION -->
+        <div id="main-tab-mongodb" class="main-tab-content">
+            <div class="content">
+                <div class="section">
+                    <div class="section-title">Connection String</div>
+                    <div class="input-group">
+                        <label for="connectionString">Enter your MongoDB connection string:</label>
+                        <input 
+                            type="text" 
+                            id="connectionString" 
+                            placeholder="mongodb://localhost:27017/mydb or mongodb+srv://user:pass@cluster.mongodb.net/mydb"
+                            value="mongodb://localhost:27017/testdb"
+                        >
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Select Tests to Run</div>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mongo-test-connection" checked>
+                            <label for="mongo-test-connection">Test Connection</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mongo-test-list-databases" checked>
+                            <label for="mongo-test-list-databases">List Databases</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mongo-test-list-collections" checked>
+                            <label for="mongo-test-list-collections">List Collections</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mongo-test-count-documents" checked>
+                            <label for="mongo-test-count-documents">Count Documents</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mongo-test-sample-documents">
+                            <label for="mongo-test-sample-documents">Sample Documents (5)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mongo-test-indexes">
+                            <label for="mongo-test-indexes">List Indexes</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mongo-test-server-status">
+                            <label for="mongo-test-server-status">Server Status</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mongo-test-db-stats">
+                            <label for="mongo-test-db-stats">Database Stats</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="runMongoTests()">Run Tests</button>
+                    <button class="btn-secondary" onclick="clearMongoOutput()">Clear Output</button>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">
+                        Output
+                        <span id="mongoStatusBadge" class="status-badge disconnected">Disconnected</span>
+                    </div>
+                    <div class="output-section" id="mongoOutput">
+                        <div class="output-line info">
+                            <span class="timestamp">[Ready]</span>
+                            <span>Ready to test MongoDB connection. Enter your connection string and click "Run Tests".</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Unified Testing Suite - API & MongoDB Tester | Built for comprehensive testing</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+

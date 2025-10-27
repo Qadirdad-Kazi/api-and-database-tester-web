@@ -1,0 +1,27 @@
+{
+  "name": "unified-testing-suite",
+  "version": "1.0.0",
+  "description": "Unified API and MongoDB Testing Platform - Frontend on Netlify, Backend on Vercel",
+  "type": "module",
+  "scripts": {
+    "dev": "node local-server.js",
+    "start": "node local-server.js"
+  },
+  "keywords": [
+    "api-tester",
+    "mongodb-tester",
+    "testing",
+    "rest-api",
+    "database"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "mongodb": "^6.3.0"
+  },
+  "devDependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
+}
+
